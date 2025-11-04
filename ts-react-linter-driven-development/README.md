@@ -24,7 +24,7 @@ A comprehensive set of TypeScript + React coding principles and Claude Code skil
 
 **Step 1: Add the marketplace**
 ```
-/plugin marketplace add buzzdan/ai-coding-rules
+/plugin marketplace add sofa-tata/ai-coding-rules
 ```
 
 **Step 2: Install the plugin**
@@ -492,7 +492,7 @@ Don't always need the full orchestrator:
 
 1. Add the marketplace:
 ```
-/plugin marketplace add buzzdan/ai-coding-rules
+/plugin marketplace add sofa-tata/ai-coding-rules
 ```
 
 2. Install the plugin:
@@ -512,7 +512,7 @@ Don't always need the full orchestrator:
 1. **Clone the repository:**
 ```bash
 cd ~/dev
-git clone https://github.com/buzzdan/ai-coding-rules.git
+git clone https://github.com/sofa-tata/ai-coding-rules.git
 ```
 
 2. **Edit skills:**
@@ -613,7 +613,7 @@ Claude: [Applies fixes, re-runs checks, presents updated summary]
 ```
 /plugin list
 # If not listed:
-/plugin marketplace add buzzdan/ai-coding-rules
+/plugin marketplace add sofa-tata/ai-coding-rules
 /plugin install ts-react-linter-driven-development@ai-coding-rules
 ```
 
