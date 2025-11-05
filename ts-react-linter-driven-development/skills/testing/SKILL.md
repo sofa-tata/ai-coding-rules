@@ -1,11 +1,12 @@
 ---
 name: testing
-description: Principles and patterns for writing effective React tests with Jest and React Testing Library. Use during implementation for test structure guidance, choosing test patterns, and deciding testing strategies. Emphasizes testing user behavior, not implementation details.
+description: Principles and patterns for writing effective React tests with React Testing Library (Jest/Vitest). Use during implementation for test structure guidance, choosing test patterns, and deciding testing strategies. Emphasizes testing user behavior, not implementation details.
 ---
 
-# Testing Principles (Jest + React Testing Library)
+# Testing Principles (React Testing Library)
 
 Principles and patterns for writing effective TypeScript + React tests.
+Works with **Jest**, **Vitest**, or any other test runner that supports React Testing Library.
 
 ## When to Use
 - During implementation (tests + code in parallel)
@@ -78,8 +79,8 @@ Examples:
 ### 3. Write Tests Next to Implementation
 
 ```typescript
-// src/features/auth/components/LoginForm.tsx
-// src/features/auth/components/LoginForm.test.tsx
+// src/components/LoginForm.tsx
+// src/components/LoginForm.test.tsx
 ```
 
 ### 4. Use Real Implementations
@@ -426,7 +427,7 @@ export const handlers = [
   })
 ]
 
-// src/test/setup.ts (in Jest config)
+// src/test/setup.ts (in test config - Jest/Vitest)
 import { server } from './mocks/server'
 
 beforeAll(() => server.listen())
@@ -526,4 +527,13 @@ test('navigates to user profile on click', async () => {
 })
 ```
 
-See reference.md for complete testing patterns and examples.
+## Additional Resources
+
+- **reference.md** - Complete testing patterns and examples
+- **examples.md** - Real-world testing examples:
+  - Testing presentational components (pure UI, 100% coverage)
+  - Testing container components (integration tests)
+  - Testing custom hooks with MSW
+  - Testing with Readonly props
+  - Testing state updates (functional vs direct)
+  - Testing composition patterns (compound components, hook composition)

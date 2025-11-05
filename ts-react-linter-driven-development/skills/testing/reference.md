@@ -1,4 +1,6 @@
-# Testing Reference (Jest + React Testing Library)
+# Testing Reference (React Testing Library)
+
+Compatible with **Jest**, **Vitest**, or any test runner supporting React Testing Library.
 
 ## Core Philosophy
 
@@ -249,7 +251,7 @@ import { handlers } from './handlers'
 
 export const server = setupServer(...handlers)
 
-// src/test/setup.ts (imported in Jest config)
+// src/test/setup.ts (imported in test config)
 import '@testing-library/jest-dom'
 import { server } from './mocks/server'
 
@@ -846,9 +848,9 @@ When you follow this pattern:
 | Leaf | 100% unit tests | Isolated, no mocks | `useDebounce()`, `Email` type, `Button` |
 | Orchestrating | Integration tests | User flows, MSW | `LoginForm`, `UserProfile`, `AuthProvider` |
 
-## Jest Matchers (jest-dom)
+## Testing Library Matchers (jest-dom / vitest-dom)
 
-Common assertions from `@testing-library/jest-dom`:
+Common assertions from `@testing-library/jest-dom` (Jest) or `@vitest/web-test-utils` (Vitest):
 
 ```typescript
 // Presence

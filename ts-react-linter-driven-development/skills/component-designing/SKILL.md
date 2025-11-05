@@ -1,6 +1,6 @@
 ---
 name: component-designing
-description: Component and type design for TypeScript + React code. Use when planning new features, designing components and custom hooks, preventing primitive obsession, or when refactoring reveals need for new abstractions. Focuses on feature-based architecture and type safety.
+description: Component and type design for TypeScript + React code. Use when planning new features, designing components and custom hooks, preventing primitive obsession, or when refactoring reveals need for new abstractions. Supports layer-based and hybrid architecture patterns with type safety.
 ---
 
 # Component Designing
@@ -27,30 +27,68 @@ Design clean, well-composed components and types that:
 
 ### 0. Architecture Pattern Analysis (FIRST STEP)
 
-**Default: Always use feature-based architecture** (group by feature, not technical layer).
+**Default: Match existing codebase architecture** (consistency is key).
 
 Scan codebase structure:
-- **Feature-based**: `src/features/auth/{LoginForm,useAuth,types,AuthContext}.tsx` ✅
-- **Technical layers**: `src/{components,hooks,contexts}/auth.tsx` ⚠️
+- **Layer-based**: `src/{components,hooks,contexts,types}/...` - Group by technical layer
+- **Hybrid**: `src/{components,hooks}/...` + `src/pages/...` - Shared layers + page-specific code
+- **Feature-based**: `src/features/[feature]/{components,hooks,types}` - Group by feature
 
 **Decision Flow**:
-1. **Pure feature-based** → Continue pattern, implement as `src/features/[new-feature]/`
-2. **Pure technical layers** → Propose: Start migration with `docs/architecture/feature-based-migration.md`, implement new feature as first feature slice
-3. **Mixed (migrating)** → Check for migration docs, continue pattern as feature-based
+1. **Pure layer-based** → Continue pattern, place code in appropriate technical layers
+2. **Pure feature-based** → Continue pattern, implement as `src/features/[new-feature]/`
+3. **Hybrid** → Follow existing conventions (e.g., shared in layers, page-specific co-located)
 
-**Always ask user approval with options:**
-- Option A: Feature-based (recommended for cohesion/maintainability)
-- Option B: Match existing pattern (if time-constrained)
-- Acknowledge: Time pressure, team decisions, consistency needs are valid
-
-**If migration needed**, create/update `docs/architecture/feature-based-migration.md`:
-```markdown
-# Feature-Based Architecture Migration Plan
-## Current State: [technical-layers/mixed]
-## Target: Feature-based structure in src/features/[feature]/
-## Strategy: New features feature-based, migrate existing incrementally
-## Progress: [x] [new-feature] (this PR), [ ] existing features
+**Layer-Based Structure** (Recommended for most codebases):
 ```
+src/
+  components/        # Reusable components only
+    Button.tsx
+    Input.tsx
+    Modal.tsx
+    Card.tsx
+  pages/            # Top-level views/pages (use components)
+    LoginPage.tsx
+    DashboardPage.tsx
+    UserProfilePage.tsx
+  hooks/            # Reusable hooks
+    useAuth.ts
+    useDebounce.ts
+    useLocalStorage.ts
+  contexts/         # Shared context providers
+    AuthContext.tsx
+    ThemeContext.tsx
+  types/            # Shared type definitions
+    auth.ts
+    user.ts
+  api/              # API client
+    authApi.ts
+    userApi.ts
+```
+
+**Key Distinction**:
+- `components/` = **Reusable** UI components (Button, Input, Modal)
+- `pages/` or `views/` = **Top-level** page components that compose reusable components
+
+**Hybrid Structure** (Common in practice):
+```
+src/
+  components/        # Truly shared UI components
+    Button.tsx
+    Input.tsx
+  hooks/            # Truly shared hooks
+    useDebounce.ts
+  pages/            # Pages with co-located feature-specific code
+    auth/
+      LoginPage.tsx
+      components/LoginForm.tsx
+      hooks/useLoginForm.ts
+    dashboard/
+      DashboardPage.tsx
+      components/StatsWidget.tsx
+```
+
+**Key Principle**: Consistency over dogma. Match the existing structure unless there's a compelling reason to change.
 
 See reference.md section #2 for detailed patterns.
 
@@ -137,18 +175,23 @@ export function createUserId(value: string): UserId {
 
 ```typescript
 interface ButtonProps {
-  label: string
-  onClick: () => void
-  variant?: 'primary' | 'secondary'
-  disabled?: boolean
+  readonly label: string
+  readonly onClick: () => void
+  readonly disabled?: boolean
+  readonly variant?: 'primary' | 'secondary'
 }
 
-export function Button({ label, onClick, variant = 'primary', disabled = false }: ButtonProps) {
+export function Button({
+  label,
+  onClick,
+  variant = 'primary',
+  disabled = false
+}: ButtonProps) {
   return (
     <button
       className={`btn btn-${variant}`}
-      onClick={onClick}
       disabled={disabled}
+      onClick={onClick}
     >
       {label}
     </button>
@@ -163,10 +206,12 @@ export function Button({ label, onClick, variant = 'primary', disabled = false }
 - Compose presentational components
 
 ```typescript
+import { EMPTY_STRING } from 'consts'
+
 export function LoginContainer() {
   const { login, isLoading, error } = useAuth()
-  const [email, setEmail] = useState('')
-  const [password, setPassword] = useState('')
+  const [email, setEmail] = useState(EMPTY_STRING)
+  const [password, setPassword] = useState(EMPTY_STRING)
 
   const handleSubmit = async () => {
     try {
@@ -180,12 +225,12 @@ export function LoginContainer() {
   return (
     <LoginForm
       email={email}
+      error={error}
+      isLoading={isLoading}
       password={password}
       onEmailChange={setEmail}
       onPasswordChange={setPassword}
       onSubmit={handleSubmit}
-      isLoading={isLoading}
-      error={error}
     />
   )
 }
@@ -285,41 +330,69 @@ export function useAuth() {
 
 ### 7. Plan Feature Structure
 
-**Feature-based structure (Recommended)**:
+**Layer-based structure** (most common):
 ```
-src/features/auth/
+src/
 ├── components/
-│   ├── LoginForm.tsx          # Presentational
+│   ├── LoginForm.tsx
 │   ├── LoginForm.test.tsx
 │   ├── RegisterForm.tsx
 │   └── RegisterForm.test.tsx
 ├── hooks/
-│   ├── useAuth.ts             # Custom hook
+│   ├── useAuth.ts
 │   ├── useAuth.test.ts
 │   ├── useFormValidation.ts
 │   └── useFormValidation.test.ts
-├── context/
-│   ├── AuthContext.tsx        # Shared state
+├── contexts/
+│   ├── AuthContext.tsx
 │   └── AuthContext.test.tsx
-├── types.ts                    # Email, UserId, etc.
-├── api.ts                      # API calls
-└── index.ts                    # Public exports
+├── types/
+│   └── auth.ts               # Email, UserId, etc.
+└── api/
+    └── authApi.ts            # API calls
 ```
 
-**Bad structure (Technical layers)**:
+**Hybrid structure** (pages + shared layers):
 ```
 src/
-├── components/LoginForm.tsx
-├── hooks/useAuth.ts
-├── contexts/AuthContext.tsx
-└── types/auth.ts
+├── components/               # Shared components
+│   ├── Button.tsx
+│   └── Input.tsx
+├── hooks/                   # Shared hooks
+│   └── useDebounce.ts
+├── pages/
+│   └── auth/
+│       ├── LoginPage.tsx
+│       ├── components/
+│       │   └── LoginForm.tsx    # Page-specific
+│       └── hooks/
+│           └── useLoginForm.ts  # Page-specific
+└── types/
+    └── auth.ts
 ```
+
+**Feature-based structure** (alternative):
+```
+src/features/auth/
+├── components/
+│   ├── LoginForm.tsx
+│   └── RegisterForm.tsx
+├── hooks/
+│   ├── useAuth.ts
+│   └── useFormValidation.ts
+├── context/
+│   └── AuthContext.tsx
+├── types.ts
+└── api.ts
+```
+
+Choose the structure that matches your existing codebase.
 
 ### 8. Review Against Principles
 
 Check design against (see reference.md):
 - [ ] No primitive obsession (use Zod/branded types)
-- [ ] Feature-based architecture
+- [ ] Consistent architecture (match existing codebase structure)
 - [ ] Component composition over prop drilling
 - [ ] Custom hooks for reusable logic
 - [ ] Context only when needed (3+ levels)
@@ -369,31 +442,35 @@ Context:
    Reason: Auth state needed across entire app
 
 Feature Structure:
-📁 src/features/auth/
-  ├── components/
+📁 src/
+  ├── components/          # Reusable components
   │   ├── LoginForm.tsx
   │   ├── LoginForm.test.tsx
   │   ├── RegisterForm.tsx
   │   └── RegisterForm.test.tsx
-  ├── hooks/
+  ├── pages/              # Top-level pages
+  │   ├── LoginPage.tsx
+  │   └── RegisterPage.tsx
+  ├── hooks/              # Reusable hooks
   │   ├── useAuth.ts
   │   ├── useAuth.test.ts
   │   ├── useFormValidation.ts
   │   └── useFormValidation.test.ts
-  ├── context/
+  ├── contexts/           # Shared contexts
   │   ├── AuthContext.tsx
   │   └── AuthContext.test.tsx
-  ├── types.ts
-  ├── api.ts
-  └── index.ts
+  ├── types/              # Type definitions
+  │   └── auth.ts
+  └── api/                # API client
+      └── authApi.ts
 
 Design Decisions:
 - Email and UserId as validated types prevent runtime errors
 - Zod for Email (form validation), branded type for UserId (type safety)
-- LoginForm is presentational for reusability and testability
+- LoginForm is reusable component, LoginPage composes it
 - useAuth hook encapsulates auth logic for reuse across components
 - AuthContext provides auth state to avoid prop drilling
-- Feature-based structure keeps all auth code together
+- Layer-based structure: components/ for reusable, pages/ for top-level views
 
 Integration Points:
 - Consumed by: App routes, protected route wrapper, user menu
@@ -402,13 +479,13 @@ Integration Points:
 
 Next Steps:
 1. Create types with validation (Zod schemas + branded types)
-2. Write tests for types and hooks (Jest + RTL)
+2. Write tests for types and hooks (React Testing Library)
 3. Implement presentational components (LoginForm)
 4. Implement container components (LoginContainer)
 5. Add context provider (AuthContext)
 6. Integration tests for full flows
 
-Ready to implement? Use @testing skill for test structure.
+Ready to implement? Use @testing skill for test structure (works with Jest, Vitest, etc.).
 ```
 
 ## Key Principles
@@ -416,7 +493,7 @@ Ready to implement? Use @testing skill for test structure.
 See reference.md for detailed principles:
 - Primitive obsession prevention (Zod schemas, branded types)
 - Component composition patterns
-- Feature-based architecture
+- Consistent architecture (layer-based, hybrid, or feature-based)
 - Custom hooks for reusable logic
 - Context for shared state (use sparingly)
 - Props interfaces and type safety
@@ -429,9 +506,17 @@ Before writing code, ask:
 - Should state be local or context?
 - Have I avoided primitive obsession?
 - Is validation in the right place?
-- Does this follow feature-based architecture?
+- Does this follow the existing codebase architecture?
 - Are components small and focused?
 
 Only after satisfactory answers, proceed to implementation.
 
-See reference.md for complete design principles and examples.
+## Additional Resources
+
+- **reference.md** - Complete design principles and patterns
+- **examples.md** - Real-world examples from codebase standards:
+  - Presentational vs Container components
+  - Props management with Readonly pattern
+  - State updates (functional vs direct)
+  - Component composition patterns
+  - Data test IDs and React best practices
