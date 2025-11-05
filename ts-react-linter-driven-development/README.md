@@ -8,17 +8,51 @@ A comprehensive set of TypeScript + React coding principles and Claude Code skil
 
 1. **linter-driven-development** - Meta-orchestrator for complete workflow (design → test → lint → review → commit)
 2. **component-designing** - Component and type design, preventing primitive obsession
-3. **testing** - Jest + React Testing Library principles and patterns
+3. **testing** - React Testing Library principles and patterns (Jest/Vitest)
 4. **refactoring** - SonarJS-driven refactoring strategies for complexity reduction
 5. **pre-commit-review** - Design validation with integrated accessibility checks (advisory)
 6. **documentation** - Storybook stories, JSDoc comments, and feature documentation
 
-## Installation
+## Prerequisites
 
-### Prerequisites
+### 1. Claude Code
 - [Claude Code](https://claude.ai/code) installed
-- Node.js and npm/yarn
-- TypeScript + React development environment
+
+### 2. Project Requirements
+
+**IMPORTANT**: Your TypeScript + React project must have linter configurations set up:
+
+**Required Configurations**:
+1. **TypeScript** (`tsconfig.json`)
+2. **ESLint** (`eslint.config.mjs` or `.eslintrc.js`) - must include `eslint-plugin-sonarjs`
+3. **Prettier** (`.prettierrc.json` or `prettier.config.js` or `.prettierrc`)
+4. **Stylelint** (`stylelint.config.js`) - if using CSS/SCSS
+
+**npm Scripts (Flexible Naming)**:
+The plugin automatically detects available scripts from your `package.json`. Script names can vary by project - the plugin looks for common patterns:
+
+- **Type checking**: `typecheck`, `type-check`, `tsc`, `check-types`
+- **Linting (check)**: `lint`, `lint:check`, `eslint`, `lintcheck`
+- **Linting (fix)**: `lint:fix`, `eslint:fix`, `lint --fix`
+- **Formatting (check)**: `format`, `format:check`, `prettier:check`, `formatcheck`
+- **Formatting (fix)**: `format:fix`, `prettier:write`, `prettier --write`
+- **Styling (check)**: `stylelint`, `style:check`, `stylecheck`
+- **Styling (fix)**: `stylelint:fix`, `style:fix`
+- **Testing**: `test`, `test:unit`, `vitest`, `jest`
+- **Combined check**: `check`, `checkall`, `validate`, `verify`
+- **Combined fix**: `fix`, `fixall`, `format:all`
+
+If scripts aren't found, the plugin will run tools directly (e.g., `tsc --noEmit`, `eslint .`, `prettier --check .`).
+
+**Test Runner Support**:
+- Works with Jest, Vitest, or any test runner that supports React Testing Library
+- Automatically detects your test runner from `package.json` scripts
+
+**Package Manager Support**:
+- Automatically detects your package manager (npm, yarn, or pnpm) by checking for lock files
+- All commands adapt to use the correct package manager throughout the workflow
+
+**The plugin adapts to YOUR project's configuration** - it does not enforce specific formatting, testing tools, or script naming conventions.
 
 ### Install the Plugin
 
@@ -98,7 +132,7 @@ Helps you:
 - Context: Only when needed (3+ component levels)
 
 #### `@testing`
-**Testing principles with Jest + React Testing Library**
+**Testing principles with React Testing Library**
 
 Guides you on:
 - Testing user behavior, not implementation details
@@ -107,6 +141,7 @@ Guides you on:
 - Real implementations over mocks
 - Table-driven tests with test.each()
 - Coverage strategies (100% for pure components/hooks)
+- Works with Jest, Vitest, or other test runners
 
 **Use when:** Writing tests or clarifying testing approach.
 
@@ -185,13 +220,14 @@ Use the meta-orchestrator for automatic workflow management:
 You: "Implement user authentication using @linter-driven-development"
 
 Claude:
+Step 0: Detects package manager (checks for yarn.lock → uses yarn)
 Phase 1: Designs Email, UserId types with Zod schemas (@component-designing)
-Phase 2: Implements with tests using Jest + RTL (@testing principles)
+Phase 2: Implements with tests using React Testing Library (@testing principles)
 Phase 3: Runs quality checks:
-  - npm run typecheck (TypeScript)
-  - npm run lintcheck (ESLint with SonarJS)
-  - npm run formatcheck (Prettier)
-  - npm run stylecheck (Stylelint)
+  - yarn typecheck (TypeScript)
+  - yarn lintcheck (ESLint with SonarJS)
+  - yarn formatcheck (Prettier)
+  - yarn stylecheck (Stylelint)
   If fails → refactors using patterns (@refactoring)
   Loops until all pass
 Phase 4: Reviews design and accessibility (@pre-commit-review)
@@ -260,7 +296,7 @@ Invoke skills independently when needed:
                     │ Implementation   │
                     │   + Testing      │
                     │  (@testing)      │
-                    │  Jest + RTL      │
+                    │  RTL+Jest/Vitest │
                     └──────────────────┘
                               │
                               ▼
@@ -353,6 +389,7 @@ Invoke skills independently when needed:
 - **Real implementations** - MSW for APIs, avoid heavy mocking
 - **Table-driven tests** - test.each() for multiple scenarios
 - **Coverage targets** - 100% for pure components/hooks, integration tests for containers
+- **Test runner agnostic** - Works with Jest, Vitest, or any runner supporting React Testing Library
 
 ### Refactoring Principles
 - **Linter-driven** - Let SonarJS complexity metrics guide refactoring
@@ -367,71 +404,31 @@ Invoke skills independently when needed:
 - **Announce changes** - aria-live for dynamic content
 - **Color + text** - Never rely on color alone
 
-## Required npm Scripts
 
-The linter-driven-development skill expects these scripts in your `package.json`:
+## ESLint + SonarJS Setup
 
-### Option 1: Separate Check/Fix Commands (Recommended)
-```json
-{
-  "scripts": {
-    "typecheck": "tsc --noEmit",
-    "lintcheck": "eslint .",
-    "formatcheck": "prettier --check .",
-    "stylecheck": "stylelint '**/*.scss'",
-    "lint": "eslint . --fix",
-    "format": "prettier --write .",
-    "stylefix": "stylelint '**/*.scss' --fix",
-    "test": "jest",
-    "storybook": "storybook dev -p 6006",
-    "build-storybook": "storybook build"
-  }
-}
-```
-
-### Option 2: Combined Commands
-```json
-{
-  "scripts": {
-    "checkall": "tsc --noEmit && eslint . && prettier --check . && stylelint '**/*.scss'",
-    "fix": "eslint . --fix && prettier --write . && stylelint '**/*.scss' --fix",
-    "test": "jest",
-    "storybook": "storybook dev -p 6006"
-  }
-}
-```
-
-## Required ESLint Configuration
-
-Install SonarJS plugin for complexity metrics:
+The plugin requires **`eslint-plugin-sonarjs`** for complexity metrics:
 
 ```bash
 npm install --save-dev eslint-plugin-sonarjs
 ```
 
-**eslint.config.mjs** (ESLint v9):
-```javascript
-import sonarjs from 'eslint-plugin-sonarjs'
-import tseslint from 'typescript-eslint'
+**Recommended SonarJS complexity thresholds** (configure in your `eslint.config.mjs`):
 
-export default tseslint.config(
-  {
-    extends: [
-      ...tseslint.configs.recommendedTypeChecked,
-      sonarjs.configs.recommended
-    ],
-    rules: {
-      // Complexity thresholds
-      'sonarjs/cognitive-complexity': ['error', 15],
-      'sonarjs/cyclomatic-complexity': ['error', { threshold: 10 }],
-      'sonarjs/expression-complexity': ['error', { max: 5 }],
-      'sonarjs/max-lines-per-function': ['error', { maximum: 200 }],
-      'sonarjs/max-lines': ['error', { maximum: 600 }],
-      'sonarjs/nested-control-flow': ['warn', { maximumNestingLevel: 4 }]
-    }
+```javascript
+{
+  rules: {
+    'sonarjs/cognitive-complexity': ['error', 15],
+    'sonarjs/cyclomatic-complexity': ['error', { threshold: 10 }],
+    'sonarjs/expression-complexity': ['error', { max: 5 }],
+    'sonarjs/max-lines-per-function': ['error', { maximum: 200 }],
+    'sonarjs/max-lines': ['error', { maximum: 600 }],
+    'sonarjs/nested-control-flow': ['warn', { maximumNestingLevel: 4 }]
   }
-)
+}
 ```
+
+These thresholds are what the `@refactoring` skill uses to guide code improvements.
 
 ## Best Practices
 
@@ -559,12 +556,12 @@ You: "Implement user profile editing with @linter-driven-development"
 Claude:
 📋 Phase 1: Design
 - Creating types: UserId, Email, DisplayName (Zod schemas)
-- Planning feature structure: src/features/profile/
-- Components: ProfileForm (presentational), ProfileContainer (container)
+- Planning feature structure: src/pages/profile/, src/components/
+- Components: ProfileForm (reusable), ProfilePage (top-level)
 - Hooks: useProfile (data fetching), useUpdateProfile (mutations)
 
 📋 Phase 2: Implementation
-- Writing tests with Jest + RTL
+- Writing tests with React Testing Library (using Vitest)
 - Testing user interactions with user-event
 - MSW for API mocking
 - Achieving 95% coverage

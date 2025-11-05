@@ -41,8 +41,8 @@ Linter-driven refactoring patterns to reduce complexity and improve React code q
 
 Run `npm run lintcheck` and analyze failures:
 ```
-src/features/auth/LoginForm.tsx:45:1: Cognitive Complexity of 18 exceeds max of 15
-src/features/users/UserList.tsx:120:5: Cyclomatic Complexity of 12 exceeds max of 10
+src/components/LoginForm.tsx:45:1: Cognitive Complexity of 18 exceeds max of 15
+src/components/UserList.tsx:120:5: Cyclomatic Complexity of 12 exceeds max of 10
 src/components/DataTable.tsx:89:1: Function has 250 lines, max is 200
 ```
 
@@ -573,4 +573,12 @@ See reference.md for detailed principles:
 - [ ] Check if more readable
 - [ ] Consider broader refactoring if patterns repeat
 
-See reference.md for complete refactoring patterns and decision trees.
+## Additional Resources
+
+- **reference.md** - Complete refactoring patterns, storifying techniques, and decision trees
+- **examples.md** - Real-world refactoring examples:
+  - Avoid IIFE (use lookup objects or helper functions)
+  - No empty blocks (use early returns, guard clauses)
+  - Magic numbers (extract to named constants)
+  - Comments philosophy (explain WHY, not WHAT)
+  - Complex conditionals to early returns
