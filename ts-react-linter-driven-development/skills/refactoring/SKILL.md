@@ -558,6 +558,7 @@ Linter Failure
 
 See reference.md for detailed principles:
 - Single Responsibility: Each component/hook does one thing
+- DRY (Don't Repeat Yourself): Extract repeated patterns to reusable utilities/constants
 - Extract Early, Extract Often: Don't wait for linter to fail
 - Composition Over Complexity: Combine simple pieces
 - Guard Clauses: Exit early, reduce nesting
