@@ -1,12 +1,30 @@
 ---
 name: linter-driven-development
-description: META ORCHESTRATOR for complete implementation workflow - design, test, lint, refactor, review, commit. Use for any code change that should result in a commit (features, bug fixes, refactors). Ensures clean code with tests, linting passes, and design validation.
+description: [LOCAL DEV VERSION] META ORCHESTRATOR for complete implementation workflow - design, test, lint, refactor, review, commit. Use for any code change that should result in a commit (features, bug fixes, refactors). Ensures clean code with tests, linting passes, and design validation.
 ---
 
 # Linter-Driven Development Workflow (TypeScript + React)
 
 META ORCHESTRATOR for implementation workflow: design → test → lint → refactor → review → commit.
 Use for any commit: features, bug fixes, refactors.
+
+## Core Principles
+
+**CRITICAL - Read Before Starting**:
+
+1. **Never Disable Rules by Default**
+   - **DO NOT** add `eslint-disable`, `@ts-ignore`, `@ts-expect-error`, or similar comments without explicit user approval
+   - **ALWAYS** strive to fix the underlying issue through refactoring, not by suppressing warnings
+   - **ONLY** disable rules as an absolute last resort when no other solution exists, and always ask user first
+
+2. **Fix, Don't Suppress**
+   - Linter warnings exist for good reasons - they indicate real issues
+   - Use @refactoring patterns to address complexity and code quality issues
+   - If a rule seems wrong for the project, discuss with user rather than silently disabling
+
+3. **Clean Code at Every Step**
+   - All checks must pass without suppressions before commit
+   - Tests pass, linter passes, types pass - no exceptions
 
 ## Prerequisites
 
@@ -159,8 +177,13 @@ If any failures detected:
   - **Style fix**: Run detected style fix script (e.g., `npm run stylelint:fix`) or `stylelint "**/*.{css,scss}" --fix`
 - Re-run quality checks
 - If still failing (complexity, design issues):
+  - **NEVER disable linter rules by default**: Do NOT add `eslint-disable`, `@ts-ignore`, `@ts-expect-error`, or similar comments unless explicitly approved by the user
+  - **Always fix, not disable**: Strive to fix the underlying issue through refactoring, not by suppressing warnings
+  - **Only disable as last resort**: If absolutely necessary and no other solution exists, ask user for explicit approval before disabling any rule
   - Interpret failures (cognitive complexity, cyclomatic complexity, etc.)
   - Invoke @refactoring skill to fix (use storifying, extract functions/hooks, early returns)
+  - **Check for existing utilities**: Before creating new helpers, check if type guards, utilities, or constants already exist in the codebase
+  - **Avoid repeated `typeof` checks**: Use or create type guard utilities (e.g., `isString`, `isNumber`) instead of repeating `typeof value === 'string'`
   - Re-run checks
 - Repeat until all checks pass clean
 

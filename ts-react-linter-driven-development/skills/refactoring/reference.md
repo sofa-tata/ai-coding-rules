@@ -1,5 +1,13 @@
 # Refactoring Reference (React/TypeScript)
 
+## Critical Rule: Never Disable Linter Rules
+
+**IMPORTANT**: When refactoring to fix linter errors:
+- **DO NOT** add `eslint-disable`, `@ts-ignore`, `@ts-expect-error`, or similar suppression comments
+- **ALWAYS** fix the underlying issue through proper refactoring
+- **ONLY** disable rules as an absolute last resort with explicit user approval
+- Linter warnings indicate real code quality issues - fix them, don't hide them
+
 ## Linter-Driven Refactoring Philosophy
 
 Let complexity metrics guide refactoring decisions:
@@ -890,6 +898,99 @@ function SignupForm() {
 }
 ```
 
+### Example 5: Repeated Type Guards
+
+```tsx
+// ❌ Before - typeof checks repeated everywhere
+function processValue(value: unknown) {
+  if (typeof value === 'string') {
+    return value.toUpperCase()
+  }
+  return ''
+}
+
+function formatInput(input: unknown) {
+  if (typeof input === 'string') {
+    return input.trim()
+  }
+  return ''
+}
+
+function parseData(data: unknown) {
+  if (typeof data === 'number') {
+    return data.toFixed(2)
+  }
+  return '0.00'
+}
+
+function calculateTotal(amount: unknown) {
+  if (typeof amount === 'number') {
+    return amount * 1.1
+  }
+  return 0
+}
+
+// ✅ After - Extract to type guard utilities
+// utils/typeGuards.ts
+export function isString(value: unknown): value is string {
+  return typeof value === 'string'
+}
+
+export function isNumber(value: unknown): value is number {
+  return typeof value === 'number'
+}
+
+export function isBoolean(value: unknown): value is boolean {
+  return typeof value === 'boolean'
+}
+
+export function isObject(value: unknown): value is Record<string, unknown> {
+  return typeof value === 'object' && value !== null && !Array.isArray(value)
+}
+
+export function isArray<T = unknown>(value: unknown): value is T[] {
+  return Array.isArray(value)
+}
+
+// usage
+import { isString, isNumber } from '@/utils/typeGuards'
+
+function processValue(value: unknown) {
+  if (isString(value)) {
+    return value.toUpperCase() // TypeScript knows value is string
+  }
+  return ''
+}
+
+function formatInput(input: unknown) {
+  if (isString(input)) {
+    return input.trim() // TypeScript knows input is string
+  }
+  return ''
+}
+
+function parseData(data: unknown) {
+  if (isNumber(data)) {
+    return data.toFixed(2) // TypeScript knows data is number
+  }
+  return '0.00'
+}
+
+function calculateTotal(amount: unknown) {
+  if (isNumber(amount)) {
+    return amount * 1.1 // TypeScript knows amount is number
+  }
+  return 0
+}
+```
+
+**Benefits**:
+- Type guards provide type narrowing (TypeScript knows the type after the check)
+- Reusable across the codebase
+- Single place to update type checking logic
+- More readable than repeated `typeof` checks
+- **Important**: Check if type guards already exist before creating new ones
+
 ### When to Ask the User
 
 If you notice a pattern that **might** be worth consolidating but you're uncertain, ask:
@@ -1368,14 +1469,16 @@ Don't use context for everything. Props are fine for 1-2 levels:
 
 ### Key Principles
 
-1. **Single Responsibility**: Each component/hook does one thing
-2. **DRY (Don't Repeat Yourself)**: Extract repeated patterns to reusable utilities/constants
-3. **Extract Early**: Don't wait for linter to fail
-4. **Composition**: Combine simple pieces, not complex ones
-5. **Guard Clauses**: Exit early, reduce nesting
-6. **Named Logic**: Extract and name complex conditions
-7. **Hooks for Logic**: Components for UI
-8. **Zod for Validation**: Declarative, reusable
+1. **Never Disable Rules**: Fix issues through refactoring, never suppress with eslint-disable or @ts-ignore
+2. **Single Responsibility**: Each component/hook does one thing
+3. **DRY (Don't Repeat Yourself)**: Extract repeated patterns to reusable utilities/constants
+4. **Check Before Creating**: Search for existing type guards, utilities, and constants before creating new ones
+5. **Extract Early**: Don't wait for linter to fail
+6. **Composition**: Combine simple pieces, not complex ones
+7. **Guard Clauses**: Exit early, reduce nesting
+8. **Named Logic**: Extract and name complex conditions
+9. **Hooks for Logic**: Components for UI
+10. **Zod for Validation**: Declarative, reusable
 
 ### Refactoring Priority
 
@@ -1394,5 +1497,7 @@ When linter fails:
 - Use Zod for validation
 - Extract nested components
 - Replace switches with object mapping
+- Use type guard utilities instead of repeated `typeof` checks
+- Check for existing utilities before creating new ones
 
 Trust the linter. When it fails, there's real complexity to address.
