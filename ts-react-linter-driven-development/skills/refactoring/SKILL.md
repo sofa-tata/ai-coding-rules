@@ -1,6 +1,6 @@
 ---
 name: refactoring
-description: Linter-driven refactoring patterns to reduce complexity and improve code quality in React/TypeScript. Use when ESLint fails with SonarJS complexity issues (cognitive, cyclomatic, expression) or when code feels hard to read/maintain. Applies component extraction, hook extraction, and simplification patterns.
+description: [LOCAL DEV VERSION] Linter-driven refactoring patterns to reduce complexity and improve code quality in React/TypeScript. Use when ESLint fails with SonarJS complexity issues (cognitive, cyclomatic, expression) or when code feels hard to read/maintain. Applies component extraction, hook extraction, and simplification patterns.
 ---
 
 # Refactoring (React/TypeScript)
@@ -12,6 +12,14 @@ Linter-driven refactoring patterns to reduce complexity and improve React code q
 - Code feels hard to read or maintain
 - Components/functions are too long or deeply nested
 - Automatically invoked by @linter-driven-development when linter fails
+
+## Critical Rule: Never Disable Linter Rules
+
+**IMPORTANT**: When refactoring:
+- **DO NOT** add `eslint-disable`, `@ts-ignore`, `@ts-expect-error`, or similar suppression comments
+- **ALWAYS** fix the underlying issue through proper refactoring
+- **ONLY** disable rules as an absolute last resort with explicit user approval
+- Linter warnings indicate real code quality issues - fix them, don't hide them
 
 ## Refactoring Signals
 
@@ -557,12 +565,15 @@ Linter Failure
 ## Key Principles
 
 See reference.md for detailed principles:
+- **Never Disable Rules**: Fix issues through refactoring, never suppress with eslint-disable or @ts-ignore
 - Single Responsibility: Each component/hook does one thing
 - DRY (Don't Repeat Yourself): Extract repeated patterns to reusable utilities/constants
+- Check Before Creating: Search for existing type guards, utilities, and constants before creating new ones
 - Extract Early, Extract Often: Don't wait for linter to fail
 - Composition Over Complexity: Combine simple pieces
 - Guard Clauses: Exit early, reduce nesting
 - Extract Helper Functions: Name complex logic
+- Type Guards: Use utilities (isString, isNumber) instead of repeated typeof checks
 - Custom Hooks: Reusable logic outside components
 - Zod for Validation: Move validation out of components
 
