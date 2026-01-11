@@ -132,6 +132,19 @@ test('user can log in', async () => {
 - ❌ No shallow rendering (use full render)
 - ❌ No excessive mocking (use MSW for APIs)
 - ❌ No getByTestId unless absolutely necessary (use accessibility queries)
+- ❌ No comments explaining test methods - test names and code should be self-explanatory
+
+### 6. Verify Tests Actually Catch Bugs
+
+When writing unit tests for components, verify each test actually works:
+
+1. Run a single test
+2. Introduce a bug in the code that the test should catch
+3. Confirm the test fails
+4. Revert the breakage
+5. Move to the next test
+
+This ensures tests are meaningful and not just passing by accident.
 
 ## Test Patterns
 

@@ -7,6 +7,8 @@
 2. [No Empty Blocks or Workarounds](#no-empty-blocks-or-workarounds)
 3. [Magic Numbers](#magic-numbers)
 4. [Comments Philosophy](#comments-philosophy)
+   - [Where Comments Are Acceptable](#where-comments-are-acceptable)
+   - [Where Comments Are NOT Acceptable](#where-comments-are-not-acceptable)
 5. [Complex Conditionals to Early Returns](#complex-conditionals-to-early-returns)
 
 ---
@@ -383,6 +385,62 @@ useEffect(() => {
 
 ### Rule: Avoid unnecessary comments. Code should be self-explanatory.
 
+### Where Comments Are Acceptable
+
+Comments MAY be used at the **file level** to explain:
+- A custom hook's overall purpose and usage pattern
+- Complex architectural decisions
+- Non-obvious module responsibilities
+
+```typescript
+// ✅ Good - File-level comment for a complex hook
+/**
+ * useVirtualizedList - Manages virtualized rendering for large lists.
+ *
+ * Handles scroll position tracking, visible item calculation, and
+ * dynamic height measurement. Uses IntersectionObserver for performance.
+ *
+ * @example
+ * const { visibleItems, containerProps } = useVirtualizedList(items, { itemHeight: 50 })
+ */
+export function useVirtualizedList<T>(items: T[], options: VirtualizedOptions) {
+  // Implementation...
+}
+```
+
+### Where Comments Are NOT Acceptable
+
+**Never comment:**
+- Functions (use descriptive names)
+- Variables (name should explain purpose)
+- Individual code lines (refactor if unclear)
+
+```typescript
+// ❌ Bad - Comment on function
+// Gets the user's full name
+function getName(user: User) {
+  return `${user.firstName} ${user.lastName}`
+}
+
+// ✅ Good - Self-explanatory name
+function getUserFullName(user: User) {
+  return `${user.firstName} ${user.lastName}`
+}
+
+// ❌ Bad - Comment on variable
+// The maximum number of retries
+const max = 3
+
+// ✅ Good - Self-explanatory name
+const MAX_RETRY_ATTEMPTS = 3
+
+// ❌ Bad - Comment on code line
+const filtered = items.filter(item => item.isActive) // Filter to active items only
+
+// ✅ Good - No comment needed, code is clear
+const activeItems = items.filter(item => item.isActive)
+```
+
 ### When NOT to Comment
 
 ```typescript
@@ -399,7 +457,7 @@ interface ButtonProps {
 }
 ```
 
-### When TO Comment
+### When TO Comment (WHY, not WHAT)
 
 ```typescript
 // ✅ Good - Explains WHY, not WHAT
@@ -427,6 +485,7 @@ useEffect(() => {
 3. **Use types** - TypeScript types document better than comments
 4. **Explain WHY, not WHAT** - Code shows what, comments explain why
 5. **Keep comments updated** - Outdated comments are worse than no comments
+6. **File-level only** - If you must comment, do it at the file/module level, not inline
 
 ### Examples of Good Naming vs Comments
 
