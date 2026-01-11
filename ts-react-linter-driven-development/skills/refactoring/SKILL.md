@@ -579,11 +579,27 @@ See reference.md for detailed principles:
 
 ## After Refactoring
 
-- [ ] Re-run linter: `npm run lintcheck`
+- [ ] Re-run linter: `npm run lintcheck` - **changed code must have no linting errors**
 - [ ] Run tests: `npm test`
 - [ ] Verify behavior unchanged
 - [ ] Check if more readable
 - [ ] Consider broader refactoring if patterns repeat
+
+## Success Criteria: Comments
+
+**No comments on functions, variables, or code lines** - they should be self-explanatory through good naming.
+
+**Acceptable comments:**
+- File-level comments explaining a complex hook's purpose or architecture
+- JSDoc for public API functions that will be consumed by other modules
+- Comments explaining WHY (non-obvious business logic, intentional tradeoffs)
+
+**Not acceptable:**
+- Comments explaining WHAT code does (refactor to better names instead)
+- Comments on variables or individual lines
+- Comments that repeat the function/variable name
+
+See examples.md for detailed examples.
 
 ## Additional Resources
 
