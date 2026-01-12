@@ -540,6 +540,98 @@ test('navigates to user profile on click', async () => {
 })
 ```
 
+## Acceptance Criteria
+
+**All criteria must be met before testing is considered complete.**
+
+### Mandatory Requirements (Must Pass)
+
+1. **All Tests Pass**
+   - [ ] All new tests pass
+   - [ ] All existing tests pass (no regressions)
+   - [ ] No skipped tests (`.skip`) without documented reason
+   - [ ] No focused tests (`.only`) left in codebase
+
+2. **Coverage Targets Met**
+   - [ ] Pure components/hooks (leaf types): 100% coverage
+   - [ ] Container components: Key user flows covered
+   - [ ] Custom hooks: All branches and edge cases tested
+   - [ ] Error states: Tested for components with async operations
+
+3. **Test Quality Standards**
+   - [ ] Tests use accessibility queries (getByRole, getByLabelText)
+   - [ ] Tests verify user behavior, not implementation details
+   - [ ] No arbitrary timeouts (no `waitFor(() => {}, { timeout: 5000 })`)
+   - [ ] MSW used for API mocking (no direct fetch mocks)
+   - [ ] No `getByTestId` unless absolutely necessary
+
+4. **Test Verification**
+   - [ ] Each test verified to actually catch bugs (break code, confirm test fails)
+   - [ ] Tests are not passing by accident (false positives)
+   - [ ] Test names clearly describe what is being tested
+
+### Verification Workflow
+
+**IMPORTANT**: Detect available scripts from the project's `package.json` before running checks.
+
+```
+# Run all tests
+Run test command from package.json (e.g., test, test:unit, vitest)
+
+# Check coverage
+Run test command with coverage flag (e.g., test --coverage)
+
+# Verify specific test catches bugs:
+# 1. Run single test
+# 2. Break the code it tests
+# 3. Confirm test fails
+# 4. Revert breakage
+```
+
+### Testing Completion Checklist
+
+```
+✅ TESTING ACCEPTANCE CRITERIA
+
+Test Execution:
+[ ] All tests pass
+[ ] No .skip or .only left in code
+[ ] No test errors or warnings
+
+Coverage:
+[ ] Leaf components/hooks: 100%
+[ ] User flows: Key paths covered
+[ ] Error states: Covered
+[ ] Edge cases: Covered
+
+Test Quality:
+[ ] Accessibility queries used (getByRole, getByLabelText)
+[ ] User behavior tested, not implementation
+[ ] No arbitrary timeouts
+[ ] MSW for API mocking
+[ ] Tests verified to catch actual bugs
+
+Testing complete: All boxes checked ✅
+```
+
+### What Blocks Completion
+
+The following will BLOCK testing completion:
+- Any failing test
+- Coverage below targets for leaf types
+- Tests using implementation details (internal state, private methods)
+- Unverified tests (not confirmed to catch bugs)
+- `.only` or `.skip` left in test files
+
+### Coverage Exceptions (Document When Used)
+
+Acceptable reasons for < 100% coverage on leaf types:
+- Platform-specific code paths (document which)
+- Third-party library edge cases
+- Explicitly unreachable defensive code
+
+**Document any coverage exceptions in test file comments.**
+
 ## Additional Resources
 
 - **reference.md** - Complete testing patterns and examples

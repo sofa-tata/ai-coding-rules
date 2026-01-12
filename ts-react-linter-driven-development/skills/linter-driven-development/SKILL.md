@@ -1,12 +1,24 @@
 ---
 name: linter-driven-development
-description: [LOCAL DEV VERSION] META ORCHESTRATOR for complete implementation workflow - design, test, lint, refactor, review, commit. Use for any code change that should result in a commit (features, bug fixes, refactors). Ensures clean code with tests, linting passes, and design validation.
+description: META ORCHESTRATOR for complete implementation workflow - design, test, lint, refactor, review, commit. Use for any code change that should result in a commit (features, bug fixes, refactors). Ensures clean code with tests, linting passes, and design validation.
 ---
 
 # Linter-Driven Development Workflow (TypeScript + React)
 
+**DEFAULT ENTRY POINT**: This skill should be automatically invoked for ALL code changes when the plugin is enabled.
+
 META ORCHESTRATOR for implementation workflow: design → test → lint → refactor → review → commit.
 Use for any commit: features, bug fixes, refactors.
+
+## Auto-Invocation
+
+When this plugin is enabled in a project, this skill is the **default workflow** for:
+- New feature implementation
+- Bug fixes
+- Refactoring
+- Any code change that should result in a commit
+
+The CLAUDE.md file at the plugin root enforces this automatic invocation.
 
 ## Core Principles
 
@@ -158,23 +170,23 @@ combined: 'check'
 
 **Use detected package manager and script names from Step 0** for all commands below.
 
-Run quality checks in this order (using detected script names):
-1. **Type Check**: Run detected typecheck script (e.g., `npm run typecheck` or `tsc` directly)
-2. **Lint Check**: Run detected lint check script (e.g., `npm run lint`, `npm run lint:check`)
-3. **Format Check**: Run detected format check script (e.g., `npm run format:check`, `npm run prettier:check`)
-4. **Style Check**: Run detected style check script (e.g., `npm run stylelint`, `npm run style:check`) - if CSS/SCSS in project
+Run quality checks in this order (using detected script names from package.json):
+1. **Type Check**: Run detected typecheck script (look for: `typecheck`, `type-check`, `tsc`)
+2. **Lint Check**: Run detected lint check script (look for: `lint`, `lint:check`, `eslint`)
+3. **Format Check**: Run detected format check script (look for: `format:check`, `prettier:check`)
+4. **Style Check**: Run detected style check script (look for: `stylelint`, `style:check`) - if CSS/SCSS in project
 
 **Handling missing scripts**:
-- If type check script not found → Run `tsc --noEmit` directly (TypeScript is required)
-- If lint check script not found → Run `eslint .` directly (ESLint is required)
-- If format check script not found → Run `prettier --check .` directly (Prettier is required)
-- If style check script not found and CSS/SCSS exists → Run `stylelint "**/*.{css,scss}"` or skip if Stylelint not installed
+- If type check script not found → Run `tsc --noEmit` directly
+- If lint check script not found → Run `eslint .` directly
+- If format check script not found → Run `prettier --check .` directly
+- If style check script not found and CSS/SCSS exists → Skip if Stylelint not installed
 
 If any failures detected:
 - Run auto-fixes using detected fix scripts:
-  - **Lint fix**: Run detected lint fix script (e.g., `npm run lint:fix`) or `eslint . --fix`
-  - **Format fix**: Run detected format fix script (e.g., `npm run format:fix`) or `prettier --write .`
-  - **Style fix**: Run detected style fix script (e.g., `npm run stylelint:fix`) or `stylelint "**/*.{css,scss}" --fix`
+  - **Lint fix**: Run detected lint fix script (look for: `lint:fix`, `eslint:fix`)
+  - **Format fix**: Run detected format fix script (look for: `format:fix`, `prettier:write`)
+  - **Style fix**: Run detected style fix script (look for: `stylelint:fix`, `style:fix`)
 - Re-run quality checks
 - If still failing (complexity, design issues):
   - **NEVER disable linter rules by default**: Do NOT add `eslint-disable`, `@ts-ignore`, `@ts-expect-error`, or similar comments unless explicitly approved by the user
@@ -188,26 +200,27 @@ If any failures detected:
 - Repeat until all checks pass clean
 
 **Alternative**: If project has combined commands (detected in Step 0):
-- Check: Use detected combined check script (e.g., `npm run check`, `npm run checkall`, `npm run validate`)
-- Fix: Use detected combined fix script (e.g., `npm run fix`, `npm run fixall`)
+- Check: Use detected combined check script
+- Fix: Use detected combined fix script
 
-**Example workflow with detected commands**:
-```bash
-# Step 0 detected: { packageManager: 'npm', typecheck: 'typecheck', lint: 'lint', lintFix: 'lint:fix', format: 'format:check', formatFix: 'format:fix', test: 'test' }
+**Example workflow**:
+```
+# Step 0: Detect commands from package.json
+# Found: { packageManager: 'npm', typecheck: 'typecheck', lint: 'lint', lintFix: 'lint:fix', ... }
 
-# Run checks
-npm run typecheck
-npm run lint
-npm run format:check
+# Run checks using detected script names
+[package-manager] run [detected-typecheck-script]
+[package-manager] run [detected-lint-script]
+[package-manager] run [detected-format-check-script]
 
-# If failures, run fixes
-npm run lint:fix
-npm run format:fix
+# If failures, run fixes using detected fix scripts
+[package-manager] run [detected-lint-fix-script]
+[package-manager] run [detected-format-fix-script]
 
-# Re-run checks
-npm run typecheck
-npm run lint
-npm run format:check
+# Re-run checks to verify
+[package-manager] run [detected-typecheck-script]
+[package-manager] run [detected-lint-script]
+[package-manager] run [detected-format-check-script]
 ```
 
 ### Phase 4: Pre-Commit Design Review (ADVISORY)
@@ -439,6 +452,99 @@ After committing, consider:
 - [ ] Address styling conventions
 - [ ] Improve comment quality
 - [ ] Use EMPTY_STRING constant
+
+## Acceptance Criteria
+
+**CRITICAL: All criteria must be met before completing this skill.**
+
+### Mandatory Requirements (Must Pass)
+
+1. **No Linter Rule Disabling in Changed Files**
+   - [ ] Changed files contain NO new `eslint-disable`, `eslint-disable-next-line`, `eslint-disable-line` comments
+   - [ ] Changed files contain NO new `@ts-ignore`, `@ts-expect-error`, `@ts-nocheck` comments
+   - [ ] Changed files contain NO new `stylelint-disable` comments
+   - [ ] Pre-existing disabling comments in unchanged files are acceptable (not in scope)
+   - **If disabling is absolutely necessary**: Stop and ask user for explicit approval before adding
+
+2. **All Quality Checks Pass Clean**
+   - [ ] TypeScript compilation: 0 errors
+   - [ ] ESLint: 0 errors, 0 warnings in changed files
+   - [ ] Prettier: All changed files formatted correctly
+   - [ ] Stylelint: 0 errors in changed CSS/SCSS files (if applicable)
+
+3. **All Tests Pass**
+   - [ ] Existing tests pass (no regressions)
+   - [ ] New tests written for new code
+   - [ ] Coverage targets met (100% for leaf components/hooks)
+
+4. **Iterative Verification**
+   - [ ] Run quality checks at least twice after final changes
+   - [ ] Second run confirms no new issues introduced
+   - [ ] If any check fails on second run, fix and repeat until two consecutive clean runs
+
+### Verification Workflow
+
+**IMPORTANT**: Detect available scripts from the project's `package.json` before running checks.
+
+```
+# Iteration 1: Initial check
+Run all quality check commands detected from package.json:
+- TypeScript check (e.g., typecheck, type-check, tsc)
+- Linting check (e.g., lint, lint:check, eslint)
+- Format check (e.g., format:check, prettier:check)
+- Tests (e.g., test, test:unit, vitest)
+
+# If failures: fix issues, then...
+
+# Iteration 2: Verify fixes didn't introduce new issues
+Run the same quality check commands again
+
+# If still clean: proceed to commit
+# If new failures: fix and repeat until two consecutive clean runs
+```
+
+### Pre-Commit Checklist
+
+Before marking workflow complete:
+
+```
+✅ ACCEPTANCE CRITERIA CHECKLIST
+
+Linter Compliance:
+[ ] No eslint-disable comments added to changed files
+[ ] No @ts-ignore/@ts-expect-error added to changed files
+[ ] All linter issues fixed through proper refactoring
+
+Quality Gates:
+[ ] TypeScript: 0 errors
+[ ] ESLint: 0 errors/warnings in changed files
+[ ] Prettier: All files formatted
+[ ] Tests: All passing
+
+Iteration Verification:
+[ ] Ran checks twice consecutively
+[ ] Both runs passed clean
+[ ] No oscillating fixes (fix A breaks B, fix B breaks A)
+
+Ready to commit: All boxes checked ✅
+```
+
+### What Blocks Completion
+
+The following will BLOCK skill completion:
+- Any new linter disabling comment in changed files (without explicit user approval)
+- Any failing quality check (typecheck, lint, format, test)
+- Single-run verification (must run checks twice)
+- Unresolved complexity issues (must refactor, not disable)
+
+### Acceptable Exceptions (Require User Approval)
+
+Only with explicit user consent:
+- Disabling a rule for a specific line with documented justification
+- Skipping a quality check due to known project issues
+- Accepting technical debt with plan to address later
+
+**Document any exceptions in commit message.**
 
 ## Additional Resources
 

@@ -80,6 +80,17 @@ That's it! All skills are now available:
 - `@pre-commit-review`
 - `@documentation`
 
+### Automatic Workflow Enforcement
+
+When the plugin is enabled, the included `CLAUDE.md` file instructs Claude to **automatically invoke `@linter-driven-development`** for all code changes. This ensures:
+
+- All code changes follow the complete workflow (design → test → lint → review → commit)
+- Quality gates are always enforced (TypeScript, ESLint, Prettier, tests)
+- No linter disabling comments are added without explicit approval
+- Iterative verification runs (checks run twice to ensure stability)
+
+You don't need to manually invoke `@linter-driven-development` - it runs automatically for any code change that should result in a commit.
+
 ## Skills Overview
 
 ### 🎯 Meta-Orchestrator
