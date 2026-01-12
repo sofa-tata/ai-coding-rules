@@ -474,6 +474,98 @@ This is **ADVISORY** only. User decides:
 
 The review never blocks commits. It informs decisions.
 
+## Acceptance Criteria
+
+**All criteria must be met before review is considered complete.**
+
+### Mandatory Requirements (Must Pass)
+
+1. **Review Scope Complete**
+   - [ ] All changed files reviewed
+   - [ ] All new components/hooks analyzed
+   - [ ] Broader context examined (entire modified files)
+
+2. **Categorization Complete**
+   - [ ] All findings categorized (Design Debt / Readability Debt / Polish)
+   - [ ] Each finding has: location, current code, better approach, why it matters
+   - [ ] Fix suggestions provided for each finding
+
+3. **Design Principles Checked**
+   - [ ] Primitive obsession checked
+   - [ ] Component composition checked
+   - [ ] Prop drilling checked
+   - [ ] Custom hook extraction opportunities identified
+   - [ ] Type safety validated
+
+4. **Accessibility Checked**
+   - [ ] Semantic HTML usage verified
+   - [ ] ARIA attributes checked
+   - [ ] Keyboard navigation verified
+   - [ ] Form labels checked
+   - [ ] Color contrast considerations noted
+
+5. **Findings Reported**
+   - [ ] Clear output format used
+   - [ ] User presented with options (commit as-is, fix debt, etc.)
+   - [ ] Broader context patterns noted if found
+
+### Review Completion Checklist
+
+```
+✅ PRE-COMMIT REVIEW ACCEPTANCE CRITERIA
+
+Scope:
+[ ] All changed files reviewed
+[ ] All new code analyzed
+[ ] Broader file context examined
+
+Categorization:
+[ ] Design Debt findings identified
+[ ] Readability Debt findings identified
+[ ] Polish Opportunities identified
+[ ] Each finding has fix suggestion
+
+Design Principles:
+[ ] No primitive obsession
+[ ] No prop drilling
+[ ] Proper component composition
+[ ] Custom hooks where appropriate
+
+Accessibility:
+[ ] Semantic HTML
+[ ] Proper ARIA
+[ ] Keyboard accessible
+[ ] Form labels present
+
+Output:
+[ ] Findings formatted clearly
+[ ] User options presented
+[ ] Recommendations clear
+
+Review complete: All boxes checked ✅
+```
+
+### What Blocks Completion
+
+The following will BLOCK review completion:
+- Files not reviewed
+- Findings not categorized
+- Missing fix suggestions
+- Accessibility not checked
+- No user options presented
+
+### Review Output Requirements
+
+Review must include:
+1. **Files Reviewed** - List of all files examined
+2. **Design Debt** - High-impact issues with fix suggestions
+3. **Readability Debt** - Medium-impact issues with fix suggestions
+4. **Polish Opportunities** - Low-impact improvements
+5. **Broader Context** - Patterns noticed in unmodified code
+6. **User Options** - Clear choices for how to proceed
+
+**Note**: This review is ADVISORY. It never blocks commits but informs decisions.
+
 ## Additional Resources
 
 - **reference.md** - Complete review checklist and examples

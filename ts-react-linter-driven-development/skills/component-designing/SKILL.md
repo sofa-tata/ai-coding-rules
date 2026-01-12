@@ -511,6 +511,94 @@ Before writing code, ask:
 
 Only after satisfactory answers, proceed to implementation.
 
+## Acceptance Criteria
+
+**All criteria must be met before design is considered complete.**
+
+### Mandatory Requirements (Must Pass)
+
+1. **Architecture Consistency**
+   - [ ] New code follows existing codebase architecture pattern
+   - [ ] Layer-based, feature-based, or hybrid pattern identified and matched
+   - [ ] File placement consistent with existing structure
+
+2. **Type Safety**
+   - [ ] No primitive obsession (domain concepts have dedicated types)
+   - [ ] Zod schemas for runtime validation where needed
+   - [ ] Branded types for type-safe identifiers
+   - [ ] Props interfaces defined for all components
+   - [ ] No `any` types in design
+
+3. **Component Structure**
+   - [ ] Clear separation: presentational vs container components
+   - [ ] Single responsibility per component
+   - [ ] Props interfaces use `readonly` where appropriate
+   - [ ] No prop drilling (use context or composition for 3+ levels)
+
+4. **Custom Hooks**
+   - [ ] Reusable logic extracted to custom hooks
+   - [ ] Hooks have single responsibility
+   - [ ] Hook return types explicitly defined
+
+5. **Design Documentation**
+   - [ ] Design plan includes all components, hooks, types
+   - [ ] Integration points identified
+   - [ ] Dependencies documented
+
+### Design Completion Checklist
+
+```
+✅ COMPONENT DESIGN ACCEPTANCE CRITERIA
+
+Architecture:
+[ ] Existing pattern identified (layer/feature/hybrid)
+[ ] New code follows existing pattern
+[ ] File structure planned consistently
+
+Type Safety:
+[ ] Domain types defined (no primitive obsession)
+[ ] Zod schemas for validation
+[ ] Branded types for IDs
+[ ] No any types
+
+Components:
+[ ] Presentational vs container distinction clear
+[ ] Single responsibility
+[ ] Props interfaces defined
+[ ] No prop drilling planned
+
+Hooks:
+[ ] Reusable logic identified for extraction
+[ ] Single responsibility per hook
+[ ] Return types defined
+
+Documentation:
+[ ] Design plan complete
+[ ] Integration points documented
+[ ] Ready for implementation
+
+Design complete: All boxes checked ✅
+```
+
+### What Blocks Completion
+
+The following will BLOCK design completion:
+- Undefined architecture pattern
+- Primitive obsession in type design
+- Missing props interfaces
+- Prop drilling in component hierarchy
+- Unclear component responsibilities
+
+### Design Output Requirements
+
+Design must include:
+1. **Core Domain Types** - All validated types with Zod or branded types
+2. **Component List** - Each with props interface and responsibility
+3. **Custom Hooks** - Each with parameters and return type
+4. **Context** - If needed, with provider and consumer pattern
+5. **Feature Structure** - File/folder organization
+6. **Integration Points** - How feature connects to existing code
+
 ## Additional Resources
 
 - **reference.md** - Complete design principles and patterns
