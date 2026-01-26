@@ -252,7 +252,7 @@ describe('ClusterCardContainer', () => {
 
 **Benefits:**
 - ✅ Tests real user workflows
-- ✅ Uses MSW for realistic API mocking
+- ✅ Uses network-level mocking for realistic API tests
 - ✅ Tests integration points (navigation, analytics)
 - ✅ Catches integration bugs
 

@@ -28,6 +28,7 @@ The CLAUDE.md file at the plugin root enforces this automatic invocation.
    - **DO NOT** add `eslint-disable`, `@ts-ignore`, `@ts-expect-error`, or similar comments without explicit user approval
    - **ALWAYS** strive to fix the underlying issue through refactoring, not by suppressing warnings
    - **ONLY** disable rules as an absolute last resort when no other solution exists, and always ask user first
+   - **When approved**: Add a comment explaining WHY the rule is disabled
 
 2. **Fix, Don't Suppress**
    - Linter warnings exist for good reasons - they indicate real issues
@@ -192,6 +193,7 @@ If any failures detected:
   - **NEVER disable linter rules by default**: Do NOT add `eslint-disable`, `@ts-ignore`, `@ts-expect-error`, or similar comments unless explicitly approved by the user
   - **Always fix, not disable**: Strive to fix the underlying issue through refactoring, not by suppressing warnings
   - **Only disable as last resort**: If absolutely necessary and no other solution exists, ask user for explicit approval before disabling any rule
+  - **When approved**: Add a comment explaining WHY the rule is disabled
   - Interpret failures (cognitive complexity, cyclomatic complexity, etc.)
   - Invoke @refactoring skill to fix (use storifying, extract functions/hooks, early returns)
   - **Check for existing utilities**: Before creating new helpers, check if type guards, utilities, or constants already exist in the codebase
@@ -465,6 +467,7 @@ After committing, consider:
    - [ ] Changed files contain NO new `stylelint-disable` comments
    - [ ] Pre-existing disabling comments in unchanged files are acceptable (not in scope)
    - **If disabling is absolutely necessary**: Stop and ask user for explicit approval before adding
+   - **When approved**: Add a comment explaining WHY the rule is disabled
 
 2. **All Quality Checks Pass Clean**
    - [ ] TypeScript compilation: 0 errors
@@ -514,6 +517,7 @@ Linter Compliance:
 [ ] No eslint-disable comments added to changed files
 [ ] No @ts-ignore/@ts-expect-error added to changed files
 [ ] All linter issues fixed through proper refactoring
+[ ] If any disabling approved: comment explains WHY
 
 Quality Gates:
 [ ] TypeScript: 0 errors
@@ -543,6 +547,17 @@ Only with explicit user consent:
 - Disabling a rule for a specific line with documented justification
 - Skipping a quality check due to known project issues
 - Accepting technical debt with plan to address later
+
+**When disabling a rule with approval, add a comment explaining WHY:**
+```typescript
+// ❌ Bad: Disabled without explanation
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+const data: any = response.body
+
+// ✅ Good: Disabled with justification
+// eslint-disable-next-line @typescript-eslint/no-explicit-any -- Legacy API returns untyped response, migration planned in JIRA-123
+const data: any = response.body
+```
 
 **Document any exceptions in commit message.**
 

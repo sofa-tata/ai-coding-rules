@@ -34,6 +34,7 @@ Every code change MUST pass:
 If a linter rule fails:
 1. Fix through proper refactoring (use `@refactoring` patterns)
 2. If truly unfixable, ASK USER for explicit approval before disabling
+3. When approved: Add a comment explaining WHY the rule is disabled
 
 ### Workflow Phases
 
