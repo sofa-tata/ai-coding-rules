@@ -19,6 +19,7 @@ Linter-driven refactoring patterns to reduce complexity and improve React code q
 - **DO NOT** add `eslint-disable`, `@ts-ignore`, `@ts-expect-error`, or similar suppression comments
 - **ALWAYS** fix the underlying issue through proper refactoring
 - **ONLY** disable rules as an absolute last resort with explicit user approval
+- **When approved**: Add a comment explaining WHY the rule is disabled
 - Linter warnings indicate real code quality issues - fix them, don't hide them
 
 ## Refactoring Signals
@@ -661,6 +662,7 @@ Linter Compliance (MANDATORY):
 [ ] No @ts-ignore/@ts-expect-error added
 [ ] All complexity issues fixed through refactoring patterns
 [ ] Did NOT disable rules to "fix" issues
+[ ] If any disabling approved: comment explains WHY
 
 Quality Verification:
 [ ] ESLint passes clean (0 errors/warnings)
@@ -681,6 +683,7 @@ Refactoring complete: All boxes checked ✅
 
 The following will BLOCK refactoring completion:
 - Any new linter disabling comment (without explicit user approval)
+- Approved linter disabling without explanatory comment (why was it necessary)
 - Complexity still above thresholds
 - Any failing linter check in refactored files
 - Single-run verification (must run twice)
@@ -692,6 +695,17 @@ Only with explicit user consent:
 - Keeping complexity slightly above threshold with justification
 - Disabling a specific rule with documented reason
 - Breaking behavior change (if explicitly requested)
+
+**When disabling a rule with approval, add a comment explaining WHY:**
+```typescript
+// ❌ Bad: Disabled without explanation
+// eslint-disable-next-line sonarjs/cognitive-complexity
+function complexLegacyParser() { ... }
+
+// ✅ Good: Disabled with justification
+// eslint-disable-next-line sonarjs/cognitive-complexity -- Legacy parser with complex state machine, refactoring planned in Q2
+function complexLegacyParser() { ... }
+```
 
 **Document any exceptions when reporting refactoring results.**
 

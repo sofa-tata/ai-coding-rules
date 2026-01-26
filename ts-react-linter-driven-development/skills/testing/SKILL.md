@@ -23,10 +23,28 @@ Works with **Jest**, **Vitest**, or any other test runner that supports React Te
 - Focus on public API
 
 **Prefer real implementations over mocks**
-- Use MSW (Mock Service Worker) for API mocking
+- Mock API calls using project's existing approach (MSW, nock, jest.mock, etc.)
 - Use real hooks and contexts
 - Test components with actual dependencies
 - Integration-style tests over unit tests
+
+**Minimize mocking - use real data closest to the component**
+- Unit tests: NO mocking of child components, icons, or UI elements
+- If testing an icon renders - check the REAL icon, don't mock it
+- Use actual component implementations, not jest.mock() replacements
+- Mocking is acceptable ONLY for:
+  - Integration/page-level tests (verifying page has all needed components)
+  - External API calls (use project's mocking approach consistently)
+  - Browser APIs that don't exist in test environment (localStorage, etc.)
+- The closer your test data is to real component behavior, the more valuable the test
+
+**Keep tests DRY - avoid code repetition**
+- Extract common render setups into helper functions (e.g., `renderWithProviders`)
+- Use `beforeEach` for shared setup across tests in a describe block
+- Create test data factories for consistent mock data
+- Share API mock handlers across test files
+- Use `test.each()` for testing same logic with different inputs
+- BUT: Prefer clarity over DRY - some repetition is OK if it makes tests more readable
 
 **Coverage targets**
 - Pure components/hooks: 100% coverage
@@ -130,9 +148,37 @@ test('user can log in', async () => {
 - ❌ No waitFor(() => {}, { timeout: 5000 }) with arbitrary delays
 - ❌ No testing implementation details (state, internal methods)
 - ❌ No shallow rendering (use full render)
-- ❌ No excessive mocking (use MSW for APIs)
+- ❌ No excessive mocking (mock APIs, not child components)
 - ❌ No getByTestId unless absolutely necessary (use accessibility queries)
 - ❌ No comments explaining test methods - test names and code should be self-explanatory
+- ❌ No mocking child components, icons, or UI elements in unit tests - use REAL implementations
+- ❌ No jest.mock() for components - if icon should render, check the REAL icon
+- ❌ No repeated code - use render helpers, data factories, beforeEach, test.each
+
+### 6. No Linter Disabling Without Approval
+
+**NEVER add linter disabling comments to test files without explicit user approval:**
+- `eslint-disable`, `eslint-disable-next-line`, `eslint-disable-line`
+- `@ts-ignore`, `@ts-expect-error`, `@ts-nocheck`
+
+If a linter rule fails in tests:
+1. Fix through proper refactoring (better test structure, correct typing)
+2. If truly unfixable, ASK USER for explicit approval before disabling
+3. **When approved**: Add a comment explaining WHY the rule is disabled
+
+```typescript
+// ❌ Bad: Disabled without explanation
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+const mockData: any = { ... }
+
+// ✅ Good: Disabled with justification (after user approval)
+// eslint-disable-next-line @typescript-eslint/no-explicit-any -- Testing error handling for malformed API responses
+const mockData: any = { unexpectedField: 'value' }
+
+// ✅ Good: Disabled with justification (after user approval)
+// @ts-expect-error -- Intentionally passing wrong type to test runtime validation
+validateUser({ name: 123 })
+```
 
 ### 6. Verify Tests Actually Catch Bugs
 
@@ -398,9 +444,11 @@ Use queries in this order (from most to least preferred):
    screen.getByTestId('custom-component')
    ```
 
-## MSW Setup
+## API Mocking Setup
 
-Mock Service Worker for realistic API mocking:
+Use the project's existing API mocking approach consistently (MSW, nock, jest.mock, etc.).
+
+**MSW example** (adapt to your project's approach):
 
 ```typescript
 // src/test/mocks/server.ts
@@ -454,7 +502,7 @@ See reference.md for detailed principles:
 - Test user behavior, not implementation
 - Use accessibility queries (getByRole)
 - Prefer real implementations over mocks
-- MSW for API mocking
+- Mock APIs consistently using project's approach
 - waitFor for async, avoid arbitrary timeouts
 - 100% coverage for pure components/hooks
 - Integration tests for user flows
@@ -562,8 +610,13 @@ test('navigates to user profile on click', async () => {
    - [ ] Tests use accessibility queries (getByRole, getByLabelText)
    - [ ] Tests verify user behavior, not implementation details
    - [ ] No arbitrary timeouts (no `waitFor(() => {}, { timeout: 5000 })`)
-   - [ ] MSW used for API mocking (no direct fetch mocks)
+   - [ ] API mocking follows project's existing approach
    - [ ] No `getByTestId` unless absolutely necessary
+   - [ ] Unit tests use REAL components - no mocking child components, icons, or UI elements
+   - [ ] Mocking only for: integration/page tests, external APIs, browser APIs
+   - [ ] Test code follows DRY principle (shared setup, data factories, render helpers)
+   - [ ] No linter disabling comments without explicit user approval
+   - [ ] If linter disabled (with approval): comment explains WHY
 
 4. **Test Verification**
    - [ ] Each test verified to actually catch bugs (break code, confirm test fails)
@@ -608,8 +661,13 @@ Test Quality:
 [ ] Accessibility queries used (getByRole, getByLabelText)
 [ ] User behavior tested, not implementation
 [ ] No arbitrary timeouts
-[ ] MSW for API mocking
+[ ] API mocking consistent with project approach
 [ ] Tests verified to catch actual bugs
+[ ] Unit tests use real components (no mocking icons, child components, UI elements)
+[ ] Mocking only for integration tests, external APIs, browser APIs
+[ ] DRY principle followed (shared setup, data factories, render helpers)
+[ ] No linter disabling without user approval
+[ ] Any approved disables have explanatory comments
 
 Testing complete: All boxes checked ✅
 ```
@@ -622,6 +680,10 @@ The following will BLOCK testing completion:
 - Tests using implementation details (internal state, private methods)
 - Unverified tests (not confirmed to catch bugs)
 - `.only` or `.skip` left in test files
+- Unit tests that mock child components, icons, or UI elements (use real implementations)
+- Excessive code repetition (extract render helpers, data factories, use beforeEach/test.each)
+- Linter disabling comments without explicit user approval
+- Approved linter disabling without explanatory comment (why was it necessary)
 
 ### Coverage Exceptions (Document When Used)
 
@@ -638,7 +700,7 @@ Acceptable reasons for < 100% coverage on leaf types:
 - **examples.md** - Real-world testing examples:
   - Testing presentational components (pure UI, 100% coverage)
   - Testing container components (integration tests)
-  - Testing custom hooks with MSW
+  - Testing custom hooks with API mocking
   - Testing with Readonly props
   - Testing state updates (functional vs direct)
   - Testing composition patterns (compound components, hook composition)
